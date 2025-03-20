@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Image filter functionality
     setupImageFilters();
     
+    // Image upload functionality
+    setupImageUpload();
+    
     // Contact form submission
     setupContactForm();
     
@@ -126,11 +129,42 @@ function setupContactForm() {
     }
 }
 
-// Function to dynamically load a new image
-function loadNewImage(imageUrl) {
+// Setup image upload functionality
+function setupImageUpload() {
+    const imageUpload = document.getElementById('imageUpload');
     const image = document.querySelector('.original-image');
-    if (image) {
-        image.src = imageUrl;
+    
+    if (imageUpload && image) {
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                // Check if the file is an image
+                if (!file.type.match('image.*')) {
+                    alert('Please select an image file');
+                    return;
+                }
+                
+                // Create a FileReader to read the image
+                const reader = new FileReader();
+                
+                // Set up the FileReader onload event
+                reader.onload = function(readerEvent) {
+                    // Set the image source to the uploaded image
+                    image.src = readerEvent.target.result;
+                    
+                    // Reset any active filters
+                    const activeFilterBtn = document.querySelector('.filter-btn.active');
+                    if (activeFilterBtn) {
+                        // Trigger a click on the active filter button to apply the filter to the new image
+                        activeFilterBtn.click();
+                    }
+                };
+                
+                // Read the image file
+                reader.readAsDataURL(file);
+            }
+        });
     }
 }
 
